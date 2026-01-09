@@ -3,115 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Landing - Serra Kankaya</title>
-    <script src="https://unpkg.com/@esotericsoftware/spine-player@3.8.*/dist/iife/spine-player.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/@esotericsoftware/spine-player@3.8.*/dist/iife/spine-player.css">
-    
+    <title>Serra Kankaya @ Drunk Owl Bar</title>
     <style>
+        /* Базовые стили для центрирования */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #0d0000;
-            overflow-x: hidden;
-            font-family: sans-serif;
+            background-color: #000000; /* Черный фон под стиль афиши */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Чтобы не было лишней прокрутки */
         }
 
-        #player-container {
+        .container {
             width: 100%;
             height: 100vh;
-            position: relative;
-        }
-
-        /* Контейнер для кликабельных зон поверх Spine */
-        #interactive-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Пропускает клики сквозь себя на кнопки */
-            z-index: 100;
-        }
-
-        .hit-zone {
-            position: absolute;
-            pointer-events: auto;
-            cursor: pointer;
-            /* background: rgba(255, 0, 0, 0.2); // Раскомментируйте для отладки зон */
-        }
-
-        /* Координаты зон на основе вашего макета */
-        .social-left { top: 50%; left: 15%; width: 120px; height: 60px; }
-        .social-right { top: 50%; right: 15%; width: 60px; height: 60px; }
-        .ticket-btn { bottom: 25%; left: 50%; transform: translateX(-50%); width: 280px; height: 80px; }
-        
-        /* Нижнее меню */
-        .nav-bar {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            height: 70px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            z-index: 1000;
-            pointer-events: auto;
         }
 
-        .nav-item {
-            flex: 1;
-            height: 100%;
-            cursor: pointer;
+        img {
+            max-width: 100%;
+            max-height: 100vh;
+            object-fit: contain; /* Картинка впишется в экран без обрезки */
+            box-shadow: 0 0 50px rgba(255, 166, 0, 0.2); /* Легкое свечение */
+        }
+
+        /* Оптимизация для мобильных */
+        @media (max-width: 600px) {
+            img {
+                width: 100%;
+                height: auto;
+            }
         }
     </style>
 </head>
 <body>
 
-<div id="player-container"></div>
-
-<div id="interactive-overlay">
-    <a href="https://facebook.com/..." target="_blank" class="hit-zone social-left" title="Facebook / Instagram"></a>
-    
-    <a href="https://t.me/..." target="_blank" class="hit-zone social-right" title="Telegram"></a>
-
-    <a href="https://tkt.ge/event/..." target="_blank" class="hit-zone ticket-btn" title="Buy Ticket"></a>
-
-    <div class="nav-bar">
-        <div class="nav-item" onclick="window.open('/bar-menu', '_blank')" title="Bar"></div>
-        <div class="nav-item" style="flex: 1.5;" onclick="toggleMenu()" title="Main Menu"></div>
-        <div class="nav-item" onclick="window.open('/food-menu', '_blank')" title="Food"></div>
+    <div class="container">
+        <img src="poster.png" alt="Serra Kankaya - Drunk Owl Bar">
     </div>
-</div>
-
-<script>
-    // Инициализация Spine Player
-    new spine.SpinePlayer("player-container", {
-        jsonUrl: "assets/landing (new).json",
-        atlasUrl: "assets/landing (new).atlas",
-        animation: "animation", // название анимации в Spine, если есть
-        premultipliedAlpha: true,
-        backgroundColor: "#00000000",
-        alpha: true,
-        showControls: false, // скрываем интерфейс плеера
-        viewport: {
-            debugRender: false,
-            padLeft: "5%",
-            padRight: "5%",
-            padTop: "5%",
-            padBottom: "5%"
-        }
-    });
-
-    function toggleMenu() {
-        console.log("Открыть основное меню");
-        // Здесь можно добавить логику выпадающего списка
-    }
-</script>
 
 </body>
 </html>
