@@ -4,7 +4,6 @@
     <style>
       .cls-1 {
         fill: #fffde1;
-        filter: url(#drop-shadow-1);
       }
 
       .cls-2 {
