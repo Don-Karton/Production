@@ -14,27 +14,26 @@
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
+      width: 100%;
+      min-height: 100vh;
       font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
       overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: #130000;
     }
 
     .iphone-pro-max {
-      background-color: #312321;
+      background-color: #130200;
       overflow-x: hidden;
       overflow-y: auto;
       width: 100%;
+      max-width: 440px;
       min-height: 100vh;
       position: relative;
       margin: 0 auto;
-      max-width: 100%;
-    }
-
-    @media (min-width: 441px) {
-      .iphone-pro-max {
-        max-width: 440px;
-        box-shadow: 0 0 50px rgba(0,0,0,0.5);
-      }
+      box-shadow: 0 0 50px rgba(0,0,0,0.5);
     }
 
     /* Бегущая строка */
@@ -214,21 +213,30 @@
     .text-wrapper {
       position: absolute;
       top: 56.8%;
-      left: 0;
-      width: 100%;
+      left: 5%;
+      width: 90%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
       font-family: 'Montserrat', sans-serif;
       font-weight: 800;
       font-style: italic;
       color: #fffde1;
-      font-size: clamp(28px, 5.5vw, 40px);
+      font-size: clamp(24px, 8vw, 40px);
       text-shadow: 0px 4px 8px rgba(0,0,0,0.6), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
       animation: glow 2s ease-in-out infinite alternate;
       z-index: 8;
-      padding: 0 20px;
       margin: 0;
       cursor: pointer;
       transition: all 0.3s ease;
+      line-height: 1.2;
+    }
+
+    @media (max-width: 440px) {
+      .text-wrapper {
+        font-size: clamp(20px, 7vw, 32px);
+      }
     }
 
     .text-wrapper:hover {
@@ -324,7 +332,7 @@
       line-height: 1.6;
       animation: fadeIn 2.5s ease-out;
       z-index: 9;
-      padding-bottom: 100px;
+      padding-bottom: calc(15vh + 80px);
     }
 
     .description-text p {
@@ -436,15 +444,15 @@
       .bottom-navigation {
         height: 60px;
       }
+      
+      .description-text {
+        padding-bottom: calc(15vh + 70px);
+      }
     }
 
     @media (min-width: 768px) {
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #1a1a1a;
-        min-height: 100vh;
+      .description-text {
+        padding-bottom: calc(15vh + 90px);
       }
     }
   </style>
