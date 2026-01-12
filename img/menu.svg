@@ -8,7 +8,7 @@
       }
 
       .cls-2 {
-        font-family: Montserrat-Black, Montserrat;
+        font-family: Montserrat-Black, Helvetica;
         font-size: 65.84px;
         font-variation-settings: 'wght' 900;
         font-weight: 800;
