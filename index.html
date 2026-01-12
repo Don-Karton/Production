@@ -1,52 +1,561 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serra Kankaya @ Drunk Owl Bar</title>
-    <style>
-        /* Базовые стили для центрирования */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000000; /* Черный фон под стиль афиши */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; /* Чтобы не было лишней прокрутки */
-        }
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <title>Serra Kankaya Live at Drunk Owl Bar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+  <style>
+    * {
+      -webkit-font-smoothing: antialiased;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+    }
 
-        .container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .iphone-pro-max {
+      background-color: #312321;
+      overflow-x: hidden;
+      overflow-y: auto;
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+      margin: 0 auto;
+      max-width: 100%;
+    }
 
-        img {
-            max-width: 100%;
-            max-height: 100vh;
-            object-fit: contain; /* Картинка впишется в экран без обрезки */
-            box-shadow: 0 0 50px rgba(255, 166, 0, 0.2); /* Легкое свечение */
-        }
+    @media (min-width: 441px) {
+      .iphone-pro-max {
+        max-width: 440px;
+        box-shadow: 0 0 50px rgba(0,0,0,0.5);
+      }
+    }
 
-        /* Оптимизация для мобильных */
-        @media (max-width: 600px) {
-            img {
-                width: 100%;
-                height: auto;
-            }
-        }
-    </style>
+    /* Бегущая строка */
+    .marquee-container {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 440px;
+      height: 40px;
+      background: #000000;
+      overflow: hidden;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .marquee {
+      display: flex;
+      animation: scroll 20s linear infinite;
+      white-space: nowrap;
+    }
+
+    .marquee-text {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #fffde1;
+      padding: 0 50px;
+      font-style: italic;
+    }
+
+    @media (max-width: 380px) {
+      .marquee-text {
+        font-size: 14px;
+        padding: 0 40px;
+      }
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Фоновые изображения - адаптивные */
+    .egermaster {
+      position: absolute;
+      top: 48px;
+      left: 0;
+      width: 100%;
+      height: 63%;
+      object-fit: cover;
+      opacity: 0.7;
+      z-index: 1;
+    }
+
+    .durk-full {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 2;
+    }
+
+    .perforation {
+      position: absolute;
+      top: 77.8%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      object-fit: cover;
+      z-index: 4;
+    }
+
+    .dark-top-up {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 18.6%;
+      object-fit: cover;
+      z-index: 3;
+    }
+
+    .events-data {
+      position: absolute;
+      top: 6.2%;
+      left: 3%;
+      width: 93.9%;
+      height: auto;
+      max-height: 35.4%;
+      object-fit: contain;
+      z-index: 5;
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .artist {
+      position: absolute;
+      top: 18.8%;
+      left: 21.6%;
+      width: 59.3%;
+      height: auto;
+      max-height: 42.3%;
+      object-fit: contain;
+      z-index: 6;
+      animation: fadeInUp 1s ease-out 0.3s both;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .organizator {
+      position: absolute;
+      top: 48.4%;
+      left: 61.6%;
+      width: 36.4%;
+      height: auto;
+      object-fit: contain;
+      z-index: 5;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: fadeIn 1.2s ease-out;
+    }
+
+    .organizator:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+
+    .event {
+      position: absolute;
+      top: 48.4%;
+      left: 5.2%;
+      width: 36.1%;
+      height: auto;
+      object-fit: contain;
+      z-index: 5;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: fadeIn 1.2s ease-out;
+    }
+
+    .event:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+
+    .rectangle {
+      position: absolute;
+      top: 55.3%;
+      left: 0;
+      width: 100%;
+      height: 8.4%;
+      background-color: #130000;
+      box-shadow: 0 -5px 30px rgba(0,0,0,0.5);
+      z-index: 7;
+    }
+
+    .text-wrapper {
+      position: absolute;
+      top: 56.8%;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      color: #fffde1;
+      font-size: clamp(28px, 5.5vw, 40px);
+      text-shadow: 0px 4px 8px rgba(0,0,0,0.6), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+      animation: glow 2s ease-in-out infinite alternate;
+      z-index: 8;
+      padding: 0 20px;
+      margin: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .text-wrapper:hover {
+      transform: scale(1.05);
+      text-shadow: 0px 4px 20px rgba(255,253,225,1), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    }
+
+    @keyframes glow {
+      from { 
+        text-shadow: 0px 4px 8px rgba(0,0,0,0.6), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+      }
+      to { 
+        text-shadow: 0px 4px 20px rgba(255,253,225,0.8), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+      }
+    }
+
+    .ticket-section {
+      position: absolute;
+      top: 66.2%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 76.1%;
+      height: auto;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 9;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .ticket-section img {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 8px 25px rgba(0,0,0,0.4));
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.02); }
+    }
+
+    .ticket-section:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    .ticket-section:hover img {
+      filter: drop-shadow(0 12px 35px rgba(255,253,225,0.6));
+    }
+
+    .ticket-price {
+      position: absolute;
+      top: 13.6%;
+      right: 7.5%;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      color: #000000;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .price-number {
+      font-size: clamp(24px, 4.5vw, 32px);
+      display: block;
+      line-height: 1;
+    }
+
+    .price-currency {
+      font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .description-title {
+      position: absolute;
+      top: 80.3%;
+      left: 8%;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: #ffffff;
+      font-size: clamp(18px, 3.5vw, 20px);
+      animation: fadeIn 2s ease-out;
+      z-index: 9;
+      margin: 0;
+    }
+
+    .description-text {
+      position: absolute;
+      top: 85%;
+      left: 8%;
+      right: 8%;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      color: #ffffff;
+      font-size: clamp(12px, 2.5vw, 14px);
+      line-height: 1.6;
+      animation: fadeIn 2.5s ease-out;
+      z-index: 9;
+      padding-bottom: 100px;
+    }
+
+    .description-text p {
+      margin: 0;
+    }
+
+    .dark-down {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 440px;
+      height: auto;
+      object-fit: cover;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Навигация */
+    .bottom-navigation {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 440px;
+      height: 70px;
+      z-index: 11;
+    }
+
+    .nav-btn {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      text-decoration: none;
+      height: 100%;
+      bottom: 0;
+    }
+
+    .nav-btn.menu-btn {
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28.6%;
+      z-index: 14;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+    }
+
+    .nav-btn.bar-btn {
+      width: 31.1%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      visibility: hidden;
+      z-index: 13;
+    }
+
+    .nav-btn.food-btn {
+      width: 32.3%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      visibility: hidden;
+      z-index: 13;
+    }
+
+    .nav-btn.bar-btn.show {
+      opacity: 1;
+      visibility: visible;
+      left: 6.4%;
+      transform: translateX(0);
+    }
+
+    .nav-btn.food-btn.show {
+      opacity: 1;
+      visibility: visible;
+      left: auto;
+      right: 6.4%;
+      transform: translateX(0);
+    }
+
+    .nav-btn img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn.menu-btn:hover {
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    .nav-btn.bar-btn:hover.show {
+      transform: translateX(0) translateY(-5px);
+    }
+
+    .nav-btn.food-btn:hover.show {
+      transform: translateX(0) translateY(-5px);
+    }
+
+    .nav-btn:hover img {
+      filter: brightness(1.2) drop-shadow(0 5px 15px rgba(255,253,225,0.5));
+    }
+
+    @media (max-width: 380px) {
+      .bottom-navigation {
+        height: 60px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #1a1a1a;
+        min-height: 100vh;
+      }
+    }
+  </style>
 </head>
 <body>
-
-    <div class="container">
-        <img src="poster.png" alt="Serra Kankaya - Drunk Owl Bar">
+  <main class="iphone-pro-max">
+    <!-- Бегущая строка -->
+    <div class="marquee-container">
+      <div class="marquee" id="marquee">
+        <span class="marquee-text">DRUNK OWL BAR</span>
+        <span class="marquee-text">LIVE MUSIC</span>
+        <span class="marquee-text">DRUNK OWL BAR</span>
+        <span class="marquee-text">LIVE MUSIC</span>
+      </div>
     </div>
 
+    <!-- Фоновые изображения -->
+    <img class="egermaster" src="img/egermaster-background-1.png" alt="Event background texture" />
+    <img class="durk-full" src="img/durk-full-1.png" alt="Full page background gradient" />
+    <img class="perforation" src="img/perforation-1.png" alt="Decorative perforation line" role="presentation" />
+    <img class="dark-top-up" src="img/dark-top-up-1.png" alt="Top gradient overlay" role="presentation" />
+
+    <!-- События и данные -->
+    <img class="events-data" src="img/events-data-1.png" alt="Event information graphic" />
+
+    <!-- Социальные ссылки с изображениями -->
+    <img class="organizator" src="img/organizator-1.png" alt="Organizer social media links" 
+         onclick="window.open('https://www.facebook.com/drunkowlbar', '_blank')" />
+    <img class="event" src="img/event-1.png" alt="Event social media links"
+         onclick="window.open('https://www.instagram.com/drunkowlbar', '_blank')" />
+
+    <!-- Артист -->
+    <img class="artist" src="img/artist-1.png" alt="Serra Kankaya artist photo" />
+
+    <!-- Прямоугольник -->
+    <div class="rectangle"></div>
+    <h1 class="text-wrapper" onclick="window.open('https://www.instagram.com/drunkowlbar?igsh=MXdwNzhrN253eHFiZw==', '_blank')">DRUNK OWL BAR</h1>
+
+    <!-- Билет с изображением -->
+    <div class="ticket-section" onclick="window.open('https://tkt.ge/en/show/31174/serra-kankaya-live-at-drunk-owl-bar', '_blank')">
+      <img src="img/TKT-GE-1.svg" alt="Buy Ticket" />
+      <div class="ticket-price">
+        <span class="price-number">45</span>
+        <span class="price-currency">GEL</span>
+      </div>
+    </div>
+
+    <!-- Описание -->
+    <h2 class="description-title">Description</h2>
+    <article class="description-text">
+      <p>
+        Drunk Owl Bar invites you to a special live night with<br>
+        Serra Kankaya — a Turkish singer-songwriter<br>
+        bringing an intimate mix of original songs<br>
+        and selected covers.
+      </p>
+    </article>
+
+    <!-- Темный градиент внизу -->
+    <img class="dark-down" src="img/dark-down.png" alt="Bottom gradient overlay" role="presentation" />
+
+    <!-- Нижняя навигация с изображениями -->
+    <nav class="bottom-navigation">
+      <a href="https://app.martipia.com/rate/2c2e6594-2e0f-4af9-9ae1-dd09ad22fab1" target="_blank" class="nav-btn bar-btn" id="barBtn">
+        <img src="img/bar.svg" alt="Bar menu" />
+      </a>
+      <div class="nav-btn menu-btn" id="menuBtn" onclick="toggleMenu()">
+        <img src="img/menu.svg" alt="Main menu" />
+      </div>
+      <a href="#food" class="nav-btn food-btn" id="foodBtn">
+        <img src="img/food.svg" alt="Food menu" />
+      </a>
+    </nav>
+  </main>
+
+  <script>
+    let isMenuOpen = false;
+
+    function toggleMenu() {
+      const barBtn = document.getElementById('barBtn');
+      const foodBtn = document.getElementById('foodBtn');
+      
+      isMenuOpen = !isMenuOpen;
+      
+      if (isMenuOpen) {
+        barBtn.classList.add('show');
+        foodBtn.classList.add('show');
+      } else {
+        barBtn.classList.remove('show');
+        foodBtn.classList.remove('show');
+      }
+    }
+
+    // Закрытие меню при клике вне его
+    document.addEventListener('click', function(event) {
+      const menuBtn = document.getElementById('menuBtn');
+      const barBtn = document.getElementById('barBtn');
+      const foodBtn = document.getElementById('foodBtn');
+      const isMenuButton = event.target.closest('#menuBtn');
+      const isBarButton = event.target.closest('#barBtn');
+      const isFoodButton = event.target.closest('#foodBtn');
+      
+      if (!isMenuButton && !isBarButton && !isFoodButton && isMenuOpen) {
+        toggleMenu();
+      }
+    });
+
+    // Дублирование текста для бесшовной бегущей строки
+    const marquee = document.getElementById('marquee');
+    const marqueeContent = marquee.innerHTML;
+    marquee.innerHTML = marqueeContent + marqueeContent;
+  </script>
 </body>
 </html>
