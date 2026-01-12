@@ -14,13 +14,6 @@
         font-weight: 800;
       }
     </style>
-    <filter id="drop-shadow-1" filterUnits="userSpaceOnUse">
-      <feOffset dx="4" dy="4"/>
-      <feGaussianBlur result="blur" stdDeviation="20"/>
-      <feFlood flood-color="#000" flood-opacity="1"/>
-      <feComposite in2="blur" operator="in"/>
-      <feComposite in="SourceGraphic"/>
-    </filter>
   </defs>
   <g id="_menu" data-name="+menu">
     <g>
