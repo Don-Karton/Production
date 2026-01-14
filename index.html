@@ -149,8 +149,15 @@
       object-fit: contain;
       z-index: 6;
       animation: fadeInUp 1s ease-out 0.3s both;
-      animation: glow 2s ease-in-out infinite alternate;
       filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+      transition: filter 0.1s ease-out;
+      cursor: pointer;
+    }
+    
+    .artist.music-glow {
+      filter: drop-shadow(0 0 20px rgba(255,253,225,0.8)) 
+              drop-shadow(0 0 40px rgba(255,253,225,0.6))
+              drop-shadow(0 10px 30px rgba(0,0,0,0.5));
     }
 
     @keyframes fadeInUp {
@@ -163,7 +170,6 @@
         transform: translateY(0);
       }
     }
-
 
     @keyframes pulse {
       0%, 100% { transform: translateX(-50%) scale(1); }
@@ -540,6 +546,11 @@
 
   <script>
     let isMenuOpen = false;
+    let audioContext;
+    let analyser;
+    let dataArray;
+    let audio;
+    let isPlaying = false;
 
     function toggleMenu() {
       const barBtn = document.getElementById('barBtn');
@@ -574,19 +585,101 @@
     const marquee = document.getElementById('marquee');
     const marqueeContent = marquee.innerHTML;
     marquee.innerHTML = marqueeContent + marqueeContent;
+
+    // Инициализация аудио и анализатора
+    function initAudio() {
+      audio = new Audio('sounds/background-music.mp3'); // Замените на имя вашего файла
+      audio.loop = true;
+      audio.volume = 0.5;
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      
+      const source = audioContext.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioContext.destination);
+      
+      const bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+      
+      startVisualization();
+    }
+
+    // Визуализация свечения
+    function startVisualization() {
+      const artist = document.querySelector('.artist');
+      
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        if (!isPlaying) return;
+        
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Анализируем басы (низкие частоты) - первые 20% массива
+        const bassRange = Math.floor(dataArray.length * 0.2);
+        let bassSum = 0;
+        for (let i = 0; i < bassRange; i++) {
+          bassSum += dataArray[i];
+        }
+        const bassAverage = bassSum / bassRange;
+        
+        // Анализируем средние частоты (где обычно находится ритм)
+        const midRange = Math.floor(dataArray.length * 0.5);
+        let midSum = 0;
+        for (let i = bassRange; i < midRange; i++) {
+          midSum += dataArray[i];
+        }
+        const midAverage = midSum / (midRange - bassRange);
+        
+        // Нормализуем значения (0-255 -> 0-1)
+        const bassIntensity = bassAverage / 255;
+        const midIntensity = midAverage / 255;
+        
+        // Комбинированная интенсивность (больший вес басам)
+        const intensity = (bassIntensity * 0.7 + midIntensity * 0.3);
+        
+        // Применяем свечение если интенсивность выше порога
+        if (intensity > 0.3) {
+          const glowStrength = intensity * 60; // Максимум 60px
+          const glowOpacity = intensity * 0.9; // Максимум 0.9
+          
+          artist.style.filter = `
+            drop-shadow(0 0 ${glowStrength}px rgba(255,253,225,${glowOpacity})) 
+            drop-shadow(0 0 ${glowStrength * 1.5}px rgba(255,253,225,${glowOpacity * 0.6}))
+            drop-shadow(0 10px 30px rgba(0,0,0,0.5))
+          `;
+        } else {
+          artist.style.filter = 'drop-shadow(0 10px 30px rgba(0,0,0,0.5))';
+        }
+      }
+      
+      animate();
+    }
+
+    // Автозапуск музыки при загрузке страницы
+    window.addEventListener('load', function() {
+      // Пробуем запустить музыку автоматически
+      initAudio();
+      
+      // Попытка автовоспроизведения (может быть заблокировано браузером)
+      audio.play().then(() => {
+        isPlaying = true;
+        console.log('Музыка запущена автоматически');
+      }).catch(() => {
+        console.log('Автовоспроизведение заблокировано. Ожидается взаимодействие пользователя.');
+        // Запускаем музыку при первом клике на странице
+        document.addEventListener('click', function startOnClick() {
+          if (!isPlaying) {
+            audio.play();
+            isPlaying = true;
+            console.log('Музыка запущена после клика');
+          }
+          document.removeEventListener('click', startOnClick);
+        }, { once: true });
+      });
+    });
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
