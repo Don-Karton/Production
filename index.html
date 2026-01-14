@@ -163,6 +163,12 @@
       }
     }
 
+
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.02); }
+    }
+    
     .organizator {
       position: absolute;
       top: 45.5%;
@@ -487,7 +493,8 @@
          onclick="window.open('https://facebook.com/events/s/drunk-owl-bar/1612672706557750/', '_blank')" />
 
     <!-- Артист -->
-    <img class="artist" src="img/artist-1.png" alt="Serra Kankaya artist photo" />
+    <img class="artist" src="img/artist-1.png" alt="Serra Kankaya artist photo"
+      onclick="window.open('https://www.instagram.com/serrakankaya?igsh=Nzhvazd6dDQzYmtt', '_blank')" />
 
     <!-- Прямоугольник -->
     <div class="rectangle"></div>
@@ -569,6 +576,7 @@
   </script>
 </body>
 </html>
+
 
 
 
