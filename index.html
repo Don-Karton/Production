@@ -470,50 +470,6 @@
         padding-bottom: calc(15vh + 90px);
       }
     }
-
-    /* Кнопка управления музыкой для отладки */
-    .music-control {
-      position: fixed;
-      top: 50px;
-      right: 10px;
-      z-index: 200;
-      background: rgba(255,253,225,0.9);
-      border: 2px solid #000;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 24px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    .music-control:hover {
-      transform: scale(1.1);
-      background: rgba(255,253,225,1);
-    }
-
-    .music-control.playing {
-      background: rgba(50,255,50,0.9);
-    }
-
-    .music-status {
-      position: fixed;
-      top: 110px;
-      right: 10px;
-      z-index: 200;
-      background: rgba(0,0,0,0.8);
-      color: #fffde1;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      font-family: monospace;
-      max-width: 200px;
-      word-wrap: break-word;
-    }
   </style>
 </head>
 <body>
@@ -574,10 +530,6 @@
     <!-- Темный градиент внизу -->
     <img class="dark-down" src="img/dark-down.png" alt="Bottom gradient overlay" role="presentation" />
 
-    <!-- Кнопка управления музыкой для тестирования -->
-    <div class="music-control" id="musicControl" onclick="toggleMusic()">🔇</div>
-    <div class="music-status" id="musicStatus">Загрузка...</div>
-
     <!-- Нижняя навигация с изображениями -->
     <nav class="bottom-navigation">
       <a href="https://app.martipia.com/rate/2c2e6594-2e0f-4af9-9ae1-dd09ad22fab1" target="_blank" class="nav-btn bar-btn" id="barBtn">
@@ -599,7 +551,7 @@
     let dataArray;
     let audio;
     let isPlaying = false;
-    let audioError = null;
+    let animationStarted = false;
 
     function toggleMenu() {
       const barBtn = document.getElementById('barBtn');
@@ -614,47 +566,6 @@
         barBtn.classList.remove('show');
         foodBtn.classList.remove('show');
       }
-    }
-
-    // Функция управления музыкой
-    function toggleMusic() {
-      if (!audio) {
-        updateStatus('Инициализация...');
-        initAudio();
-        return;
-      }
-
-      if (isPlaying) {
-        audio.pause();
-        isPlaying = false;
-        updateMusicButton();
-        updateStatus('Пауза');
-      } else {
-        audio.play().then(() => {
-          isPlaying = true;
-          updateMusicButton();
-          updateStatus('Играет ✓');
-        }).catch(err => {
-          updateStatus('Ошибка: ' + err.message);
-        });
-      }
-    }
-
-    function updateMusicButton() {
-      const btn = document.getElementById('musicControl');
-      if (isPlaying) {
-        btn.textContent = '🔊';
-        btn.classList.add('playing');
-      } else {
-        btn.textContent = '🔇';
-        btn.classList.remove('playing');
-      }
-    }
-
-    function updateStatus(message) {
-      const status = document.getElementById('musicStatus');
-      status.textContent = message;
-      console.log('Music Status:', message);
     }
 
     // Закрытие меню при клике вне его
@@ -678,68 +589,45 @@
 
     // Инициализация аудио и анализатора
     function initAudio() {
-      try {
-        updateStatus('Создание Audio...');
-        audio = new Audio('sounds/background-music.mp3');
-        audio.loop = true;
-        audio.volume = 0.5;
+      if (audio) return; // инициализируем только один раз
 
-        // Обработчики событий аудио
-        audio.addEventListener('loadeddata', () => {
-          updateStatus('Файл загружен ✓');
-        });
+      audio = new Audio('sounds/background-music.mp3'); // путь к треку в папке sounds
+      audio.crossOrigin = "anonymous"; // на всякий случай, если нужен доступ к данным
+      audio.loop = true;
+      audio.volume = 0.5;
 
-        audio.addEventListener('error', (e) => {
-          let errorMsg = 'Ошибка загрузки';
-          if (audio.error) {
-            switch(audio.error.code) {
-              case 1: errorMsg = 'Загрузка прервана'; break;
-              case 2: errorMsg = 'Сетевая ошибка'; break;
-              case 3: errorMsg = 'Ошибка декодирования'; break;
-              case 4: errorMsg = 'Файл не найден или формат не поддерживается'; break;
-            }
-          }
-          updateStatus(errorMsg);
-          audioError = errorMsg;
-        });
-
-        audio.addEventListener('canplaythrough', () => {
-          updateStatus('Готов к воспроизведению. Нажмите кнопку 🔇');
-        });
-
-        updateStatus('Инициализация Web Audio API...');
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        
-        const source = audioContext.createMediaElementSource(audio);
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-        
-        const bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
-        
-        updateStatus('Анализатор готов. Нажмите 🔇 для запуска');
-        startVisualization();
-      } catch (err) {
-        updateStatus('Ошибка инициализации: ' + err.message);
-        console.error('Init error:', err);
-      }
+      // Создаём AudioContext при необходимости
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 512; // чуть лучше разрешение
+      analyser.smoothingTimeConstant = 0.8; // сглаживание для более плавного свечения
+      
+      const source = audioContext.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioContext.destination);
+      
+      const bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+      
+      startVisualization();
     }
 
     // Визуализация свечения
     function startVisualization() {
+      if (animationStarted) return;
+      animationStarted = true;
+
       const artist = document.querySelector('.artist');
       
       function animate() {
         requestAnimationFrame(animate);
         
-        if (!isPlaying || !analyser) return;
+        if (!isPlaying) return; // продолжаем цикл, просто не применяем свечение
         
         analyser.getByteFrequencyData(dataArray);
         
         // Анализируем басы (низкие частоты) - первые 20% массива
-        const bassRange = Math.floor(dataArray.length * 0.2);
+        const bassRange = Math.max(1, Math.floor(dataArray.length * 0.2));
         let bassSum = 0;
         for (let i = 0; i < bassRange; i++) {
           bassSum += dataArray[i];
@@ -747,59 +635,96 @@
         const bassAverage = bassSum / bassRange;
         
         // Анализируем средние частоты (где обычно находится ритм)
-        const midRange = Math.floor(dataArray.length * 0.5);
+        const midStart = bassRange;
+        const midEnd = Math.max(midStart + 1, Math.floor(dataArray.length * 0.5));
         let midSum = 0;
-        for (let i = bassRange; i < midRange; i++) {
+        for (let i = midStart; i < midEnd; i++) {
           midSum += dataArray[i];
         }
-        const midAverage = midSum / (midRange - bassRange);
+        const midAverage = midSum / (midEnd - midStart);
         
         // Нормализуем значения (0-255 -> 0-1)
         const bassIntensity = bassAverage / 255;
         const midIntensity = midAverage / 255;
         
         // Комбинированная интенсивность (больший вес басам)
-        const intensity = (bassIntensity * 0.7 + midIntensity * 0.3);
+        const intensity = Math.min(1, bassIntensity * 0.75 + midIntensity * 0.25);
         
-        // Применяем свечение если интенсивность выше порога
-        if (intensity > 0.3) {
-          const glowStrength = intensity * 60; // Максимум 60px
-          const glowOpacity = intensity * 0.9; // Максимум 0.9
+        // Порог и применение светоэффекта
+        const threshold = 0.12; // порог срабатывания — можно корректировать
+        if (intensity > threshold) {
+          // более чувствительный масштаб — подстраиваемся под громкость трека
+          const glowStrength = Math.min(100, Math.round(intensity * 120)); // пиксели размытия
+          const glowOpacity = Math.min(0.95, intensity * 1.1);
           
           artist.style.filter = `
             drop-shadow(0 0 ${glowStrength}px rgba(255,253,225,${glowOpacity})) 
-            drop-shadow(0 0 ${glowStrength * 1.5}px rgba(255,253,225,${glowOpacity * 0.6}))
+            drop-shadow(0 0 ${Math.round(glowStrength * 1.4)}px rgba(255,253,225,${glowOpacity * 0.6}))
             drop-shadow(0 10px 30px rgba(0,0,0,0.5))
           `;
+          // Можно также добавлять класс для CSS-анимаций
+          artist.classList.add('music-glow');
         } else {
           artist.style.filter = 'drop-shadow(0 10px 30px rgba(0,0,0,0.5))';
+          artist.classList.remove('music-glow');
         }
       }
       
       animate();
     }
 
-    // Автозапуск музыки при загрузке страницы
-    window.addEventListener('load', function() {
-      updateStatus('Страница загружена. Инициализация...');
-      
-      // Пробуем запустить музыку автоматически
+    // Попытка запустить музыку и AudioContext с учётом политики автоплей браузеров
+    function tryStartAudio() {
       initAudio();
-      
-      // Попытка автовоспроизведения (может быть заблокировано браузером)
-      setTimeout(() => {
-        if (audio && !audioError) {
+      if (!audio) return;
+
+      // При успешном воспроизведении — резюмируем AudioContext и включаем визуализацию
+      audio.play().then(() => {
+        // Некоторый браузеры создают suspended AudioContext — резюмируем его
+        if (audioContext && audioContext.state === 'suspended') {
+          audioContext.resume().catch(() => {});
+        }
+        isPlaying = true;
+        console.log('Музыка запущена автоматически');
+      }).catch((err) => {
+        console.log('Автовоспроизведение заблокировано. Ожидается взаимодействие пользователя.', err);
+        // Запустить при первом взаимодействии пользователя
+        const startHandler = function() {
+          if (!audio) return;
+          // Резюмуем context перед play
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume().catch(() => {});
+          }
           audio.play().then(() => {
             isPlaying = true;
-            updateMusicButton();
-            updateStatus('Играет автоматически ✓');
-          }).catch((err) => {
-            updateStatus('Автозапуск заблокирован. Нажмите 🔇');
-            console.log('Autoplay blocked:', err);
+            console.log('Музыка запущена после взаимодействия пользователя');
+          }).catch(e => {
+            console.warn('Не удалось запустить аудио после клика:', e);
           });
-        }
-      }, 500);
+          // Удаляем слушатели — нужно выполнить один раз
+          document.removeEventListener('click', startHandler);
+          document.removeEventListener('touchstart', startHandler);
+        };
+        document.addEventListener('click', startHandler, { once: true });
+        document.addEventListener('touchstart', startHandler, { once: true });
+      });
+    }
+
+    // Автозапуск музыки при загрузке страницы (попытка)
+    window.addEventListener('load', function() {
+      tryStartAudio();
     });
+
+    // Также даём пользователю возможность нажать на артистку, чтобы включить звук — удобно для мобил
+    const artistEl = document.querySelector('.artist');
+    if (artistEl) {
+      artistEl.addEventListener('click', function() {
+        tryStartAudio();
+      });
+      artistEl.addEventListener('touchstart', function() {
+        tryStartAudio();
+      });
+    }
   </script>
 </body>
 </html>
