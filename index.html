@@ -470,6 +470,50 @@
         padding-bottom: calc(15vh + 90px);
       }
     }
+
+    /* Кнопка управления музыкой для отладки */
+    .music-control {
+      position: fixed;
+      top: 50px;
+      right: 10px;
+      z-index: 200;
+      background: rgba(255,253,225,0.9);
+      border: 2px solid #000;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 24px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .music-control:hover {
+      transform: scale(1.1);
+      background: rgba(255,253,225,1);
+    }
+
+    .music-control.playing {
+      background: rgba(50,255,50,0.9);
+    }
+
+    .music-status {
+      position: fixed;
+      top: 110px;
+      right: 10px;
+      z-index: 200;
+      background: rgba(0,0,0,0.8);
+      color: #fffde1;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-family: monospace;
+      max-width: 200px;
+      word-wrap: break-word;
+    }
   </style>
 </head>
 <body>
@@ -530,6 +574,10 @@
     <!-- Темный градиент внизу -->
     <img class="dark-down" src="img/dark-down.png" alt="Bottom gradient overlay" role="presentation" />
 
+    <!-- Кнопка управления музыкой для тестирования -->
+    <div class="music-control" id="musicControl" onclick="toggleMusic()">🔇</div>
+    <div class="music-status" id="musicStatus">Загрузка...</div>
+
     <!-- Нижняя навигация с изображениями -->
     <nav class="bottom-navigation">
       <a href="https://app.martipia.com/rate/2c2e6594-2e0f-4af9-9ae1-dd09ad22fab1" target="_blank" class="nav-btn bar-btn" id="barBtn">
@@ -551,6 +599,7 @@
     let dataArray;
     let audio;
     let isPlaying = false;
+    let audioError = null;
 
     function toggleMenu() {
       const barBtn = document.getElementById('barBtn');
@@ -565,6 +614,47 @@
         barBtn.classList.remove('show');
         foodBtn.classList.remove('show');
       }
+    }
+
+    // Функция управления музыкой
+    function toggleMusic() {
+      if (!audio) {
+        updateStatus('Инициализация...');
+        initAudio();
+        return;
+      }
+
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        updateMusicButton();
+        updateStatus('Пауза');
+      } else {
+        audio.play().then(() => {
+          isPlaying = true;
+          updateMusicButton();
+          updateStatus('Играет ✓');
+        }).catch(err => {
+          updateStatus('Ошибка: ' + err.message);
+        });
+      }
+    }
+
+    function updateMusicButton() {
+      const btn = document.getElementById('musicControl');
+      if (isPlaying) {
+        btn.textContent = '🔊';
+        btn.classList.add('playing');
+      } else {
+        btn.textContent = '🔇';
+        btn.classList.remove('playing');
+      }
+    }
+
+    function updateStatus(message) {
+      const status = document.getElementById('musicStatus');
+      status.textContent = message;
+      console.log('Music Status:', message);
     }
 
     // Закрытие меню при клике вне его
@@ -588,22 +678,53 @@
 
     // Инициализация аудио и анализатора
     function initAudio() {
-      audio = new Audio('sounds/background-music.mp3'); // Замените на имя вашего файла
-      audio.loop = true;
-      audio.volume = 0.5;
+      try {
+        updateStatus('Создание Audio...');
+        audio = new Audio('sounds/background-music.mp3');
+        audio.loop = true;
+        audio.volume = 0.5;
 
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = 256;
-      
-      const source = audioContext.createMediaElementSource(audio);
-      source.connect(analyser);
-      analyser.connect(audioContext.destination);
-      
-      const bufferLength = analyser.frequencyBinCount;
-      dataArray = new Uint8Array(bufferLength);
-      
-      startVisualization();
+        // Обработчики событий аудио
+        audio.addEventListener('loadeddata', () => {
+          updateStatus('Файл загружен ✓');
+        });
+
+        audio.addEventListener('error', (e) => {
+          let errorMsg = 'Ошибка загрузки';
+          if (audio.error) {
+            switch(audio.error.code) {
+              case 1: errorMsg = 'Загрузка прервана'; break;
+              case 2: errorMsg = 'Сетевая ошибка'; break;
+              case 3: errorMsg = 'Ошибка декодирования'; break;
+              case 4: errorMsg = 'Файл не найден или формат не поддерживается'; break;
+            }
+          }
+          updateStatus(errorMsg);
+          audioError = errorMsg;
+        });
+
+        audio.addEventListener('canplaythrough', () => {
+          updateStatus('Готов к воспроизведению. Нажмите кнопку 🔇');
+        });
+
+        updateStatus('Инициализация Web Audio API...');
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        
+        const source = audioContext.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        
+        const bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        
+        updateStatus('Анализатор готов. Нажмите 🔇 для запуска');
+        startVisualization();
+      } catch (err) {
+        updateStatus('Ошибка инициализации: ' + err.message);
+        console.error('Init error:', err);
+      }
     }
 
     // Визуализация свечения
@@ -613,7 +734,7 @@
       function animate() {
         requestAnimationFrame(animate);
         
-        if (!isPlaying) return;
+        if (!isPlaying || !analyser) return;
         
         analyser.getByteFrequencyData(dataArray);
         
@@ -660,25 +781,24 @@
 
     // Автозапуск музыки при загрузке страницы
     window.addEventListener('load', function() {
+      updateStatus('Страница загружена. Инициализация...');
+      
       // Пробуем запустить музыку автоматически
       initAudio();
       
       // Попытка автовоспроизведения (может быть заблокировано браузером)
-      audio.play().then(() => {
-        isPlaying = true;
-        console.log('Музыка запущена автоматически');
-      }).catch(() => {
-        console.log('Автовоспроизведение заблокировано. Ожидается взаимодействие пользователя.');
-        // Запускаем музыку при первом клике на странице
-        document.addEventListener('click', function startOnClick() {
-          if (!isPlaying) {
-            audio.play();
+      setTimeout(() => {
+        if (audio && !audioError) {
+          audio.play().then(() => {
             isPlaying = true;
-            console.log('Музыка запущена после клика');
-          }
-          document.removeEventListener('click', startOnClick);
-        }, { once: true });
-      });
+            updateMusicButton();
+            updateStatus('Играет автоматически ✓');
+          }).catch((err) => {
+            updateStatus('Автозапуск заблокирован. Нажмите 🔇');
+            console.log('Autoplay blocked:', err);
+          });
+        }
+      }, 500);
     });
   </script>
 </body>
