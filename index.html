@@ -149,8 +149,10 @@
       object-fit: contain;
       z-index: 6;
       animation: fadeInUp 1s ease-out 0.3s both;
-      animation: glow 2s ease-in-out infinite alternate;
-      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+      filter: drop-shadow(0 0 20px rgba(255,50,80,0.8)) 
+              drop-shadow(0 0 40px rgba(255,30,60,0.6))
+              drop-shadow(0 0 60px rgba(255,20,50,0.4))
+              drop-shadow(0 10px 30px rgba(0,0,0,0.5));
       cursor: pointer;
     }
 
@@ -574,6 +576,46 @@
     const marquee = document.getElementById('marquee');
     const marqueeContent = marquee.innerHTML;
     marquee.innerHTML = marqueeContent + marqueeContent;
+
+    // Хаотичная пульсация неонового свечения (122-130 BPM)
+    const artist = document.querySelector('.artist');
+    let pulseInterval;
+
+    function randomPulse() {
+      // Случайный BPM между 122 и 130
+      const bpm = Math.random() * (130 - 122) + 122;
+      // Конвертируем BPM в миллисекунды (60000ms / BPM / 2 для полного цикла)
+      const duration = (60000 / bpm / 2);
+      
+      // Случайная интенсивность пульсации
+      const intensity = Math.random() * 0.3 + 0.7; // 0.7 - 1.0
+      
+      // Применяем максимальное свечение
+      artist.style.filter = `
+        drop-shadow(0 0 ${35 * intensity}px rgba(255,50,80,${intensity})) 
+        drop-shadow(0 0 ${70 * intensity}px rgba(255,30,60,${0.9 * intensity}))
+        drop-shadow(0 0 ${100 * intensity}px rgba(255,20,50,${0.7 * intensity}))
+        drop-shadow(0 10px 30px rgba(0,0,0,0.5))
+      `;
+      
+      // Через половину длительности возвращаемся к минимальному
+      setTimeout(() => {
+        artist.style.filter = `
+          drop-shadow(0 0 20px rgba(255,50,80,0.8)) 
+          drop-shadow(0 0 40px rgba(255,30,60,0.6))
+          drop-shadow(0 0 60px rgba(255,20,50,0.4))
+          drop-shadow(0 10px 30px rgba(0,0,0,0.5))
+        `;
+      }, duration);
+      
+      // Планируем следующую пульсацию
+      pulseInterval = setTimeout(randomPulse, duration * 2);
+    }
+
+    // Запускаем пульсацию после загрузки
+    window.addEventListener('load', () => {
+      setTimeout(randomPulse, 1000); // Задержка 1 сек после fadeIn анимации
+    });
   </script>
 </body>
 </html>
