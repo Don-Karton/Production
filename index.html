@@ -149,9 +149,9 @@
       object-fit: contain;
       z-index: 6;
       animation: fadeInUp 1s ease-out 0.3s both;
-      filter: drop-shadow(0 0 15px rgba(200,0,0,0.6)) 
-              drop-shadow(0 0 30px rgba(200,0,0,0.4))
-              drop-shadow(0 0 45px rgba(200,0,0,0.3))
+      filter: drop-shadow(0 0 15px rgba(200,0,0,0.4)) 
+              drop-shadow(0 0 30px rgba(200,0,0,0.3))
+              drop-shadow(0 0 45px rgba(200,0,0,0.2))
               drop-shadow(0 10px 30px rgba(0,0,0,0.5));
       cursor: pointer;
       transition: filter 0.6s ease-in-out;
@@ -589,22 +589,22 @@
       const duration = (60000 / bpm / 2);
       
       // Случайная интенсивность пульсации (более заметная)
-      const intensity = Math.random() * 0.3 + 0.7; // 0.7 - 1.0
+      const intensity = Math.random() * 0.3 + 0.5; // 0.5 - 1.0
       
       // Применяем максимальное свечение (яркая пульсация)
       artist.style.filter = `
-        drop-shadow(0 0 ${15 * intensity}px rgba(200,0,0,${0.8 * intensity})) 
-        drop-shadow(0 0 ${20 * intensity}px rgba(200,0,0,${0.6 * intensity}))
-        drop-shadow(0 0 ${30 * intensity}px rgba(200,0,0,${0.4 * intensity}))
+        drop-shadow(0 0 ${15 * intensity}px rgba(200,0,0,${0.5 * intensity})) 
+        drop-shadow(0 0 ${20 * intensity}px rgba(200,0,0,${0.4 * intensity}))
+        drop-shadow(0 0 ${30 * intensity}px rgba(200,0,0,${0.2 * intensity}))
         drop-shadow(0 10px 30px rgba(0,0,0,0.5))
       `;
       
       // Через половину длительности возвращаемся к минимальному
       setTimeout(() => {
         artist.style.filter = `
-          drop-shadow(0 0 5px rgba(200,0,0,0.6)) 
-          drop-shadow(0 0 10px rgba(200,0,0,0.4))
-          drop-shadow(0 0 20px rgba(200,0,0,0.3))
+          drop-shadow(0 0 5px rgba(200,0,0,0.4)) 
+          drop-shadow(0 0 10px rgba(200,0,0,0.3))
+          drop-shadow(0 0 20px rgba(200,0,0,0.2))
           drop-shadow(0 10px 30px rgba(0,0,0,0.5))
         `;
       }, duration);
@@ -620,6 +620,7 @@
   </script>
 </body>
 </html>
+
 
 
 
