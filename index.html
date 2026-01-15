@@ -149,11 +149,11 @@
       object-fit: contain;
       z-index: 6;
       animation: fadeInUp 1s ease-out 0.3s both;
-      filter: drop-shadow(0 0 2px rgba(255,50,80,0.8)) 
-              drop-shadow(0 0 4px rgba(255,30,60,0.6))
-              drop-shadow(0 0 6px rgba(255,20,50,0.4))
-              drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+      filter: drop-shadow(0 0 10px rgba(255,50,80,0.3)) 
+              drop-shadow(0 0 20px rgba(255,30,60,0.2))
+              drop-shadow(0 10px 30px rgba(0,0,0,0.5));
       cursor: pointer;
+      transition: filter 0.6s ease-in-out;
     }
 
     @keyframes fadeInUp {
@@ -587,24 +587,22 @@
       // Конвертируем BPM в миллисекунды (60000ms / BPM / 2 для полного цикла)
       const duration = (60000 / bpm / 2);
       
-      // Случайная интенсивность пульсации
-      const intensity = Math.random() * 0.3 + 0.7; // 0.7 - 1.0
+      // Случайная интенсивность пульсации (более тонкая)
+      const intensity = Math.random() * 0.2 + 0.4; // 0.4 - 0.6 (более сдержанно)
       
-      // Применяем максимальное свечение
+      // Применяем максимальное свечение (более прозрачное и меньший радиус)
       artist.style.filter = `
-        drop-shadow(0 0 ${35 * intensity}px rgba(255,50,80,${intensity})) 
-        drop-shadow(0 0 ${70 * intensity}px rgba(255,30,60,${0.9 * intensity}))
-        drop-shadow(0 0 ${100 * intensity}px rgba(255,20,50,${0.7 * intensity}))
+        drop-shadow(0 0 ${15 * intensity}px rgba(255,50,80,${0.35 * intensity})) 
+        drop-shadow(0 0 ${25 * intensity}px rgba(255,30,60,${0.25 * intensity}))
         drop-shadow(0 10px 30px rgba(0,0,0,0.5))
       `;
       
       // Через половину длительности возвращаемся к минимальному
       setTimeout(() => {
         artist.style.filter = `
-          drop-shadow(0 0 2px rgba(255,50,80,0.8)) 
-          drop-shadow(0 0 4px rgba(255,30,60,0.6))
-          drop-shadow(0 0 6px rgba(255,20,50,0.4))
-          drop-shadow(0 1px 3px rgba(0,0,0,0.5))
+          drop-shadow(0 0 10px rgba(255,50,80,0.3)) 
+          drop-shadow(0 0 20px rgba(255,30,60,0.2))
+          drop-shadow(0 10px 30px rgba(0,0,0,0.5))
         `;
       }, duration);
       
@@ -619,4 +617,3 @@
   </script>
 </body>
 </html>
-
