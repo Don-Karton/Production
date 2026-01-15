@@ -149,8 +149,8 @@
       object-fit: contain;
       z-index: 6;
       animation: fadeInUp 1s ease-out 0.3s both;
-      filter: drop-shadow(0 0 10px rgba(255,50,80,0.3)) 
-              drop-shadow(0 0 20px rgba(255,30,60,0.2))
+      filter: drop-shadow(0 0 10px rgba(255,50,80,0.5)) 
+              drop-shadow(0 0 20px rgba(255,30,60,0.35))
               drop-shadow(0 10px 30px rgba(0,0,0,0.5));
       cursor: pointer;
       transition: filter 0.6s ease-in-out;
@@ -587,21 +587,21 @@
       // Конвертируем BPM в миллисекунды (60000ms / BPM / 2 для полного цикла)
       const duration = (60000 / bpm / 2);
       
-      // Случайная интенсивность пульсации (более тонкая)
-      const intensity = Math.random() * 0.2 + 0.4; // 0.4 - 0.6 (более сдержанно)
+      // Случайная интенсивность пульсации (увеличена яркость)
+      const intensity = Math.random() * 0.3 + 0.6; // 0.6 - 0.9
       
-      // Применяем максимальное свечение (более прозрачное и меньший радиус)
+      // Применяем максимальное свечение (более яркое)
       artist.style.filter = `
-        drop-shadow(0 0 ${25 * intensity}px rgba(255,50,80,${0.35 * intensity})) 
-        drop-shadow(0 0 ${45 * intensity}px rgba(255,30,60,${0.45 * intensity}))
+        drop-shadow(0 0 ${15 * intensity}px rgba(255,50,80,${0.6 * intensity})) 
+        drop-shadow(0 0 ${25 * intensity}px rgba(255,30,60,${0.45 * intensity}))
         drop-shadow(0 10px 30px rgba(0,0,0,0.5))
       `;
       
       // Через половину длительности возвращаемся к минимальному
       setTimeout(() => {
         artist.style.filter = `
-          drop-shadow(0 0 10px rgba(255,50,80,0.3)) 
-          drop-shadow(0 0 20px rgba(255,30,60,0.2))
+          drop-shadow(0 0 10px rgba(255,50,80,0.5)) 
+          drop-shadow(0 0 20px rgba(255,30,60,0.35))
           drop-shadow(0 10px 30px rgba(0,0,0,0.5))
         `;
       }, duration);
@@ -617,5 +617,3 @@
   </script>
 </body>
 </html>
-
-
