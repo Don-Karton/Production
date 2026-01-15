@@ -589,12 +589,12 @@
       const duration = (60000 / bpm / 2);
       
       // Случайная интенсивность пульсации (более заметная)
-      const intensity = Math.random() * 0.3 + 0.6; // 0.6 - 1.0
+      const intensity = Math.random() * 0.3 + 0.7; // 0.7 - 1.0
       
       // Применяем максимальное свечение (яркая пульсация)
       artist.style.filter = `
-        drop-shadow(0 0 ${15 * intensity}px rgba(200,0,0,${0.6 * intensity})) 
-        drop-shadow(0 0 ${20 * intensity}px rgba(200,0,0,${0.5 * intensity}))
+        drop-shadow(0 0 ${15 * intensity}px rgba(200,0,0,${0.8 * intensity})) 
+        drop-shadow(0 0 ${20 * intensity}px rgba(200,0,0,${0.6 * intensity}))
         drop-shadow(0 0 ${30 * intensity}px rgba(200,0,0,${0.4 * intensity}))
         drop-shadow(0 10px 30px rgba(0,0,0,0.5))
       `;
@@ -620,6 +620,7 @@
   </script>
 </body>
 </html>
+
 
 
 
