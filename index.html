@@ -149,15 +149,9 @@
       object-fit: contain;
       z-index: 6;
       animation: fadeInUp 1s ease-out 0.3s both;
+      animation: glow 2s ease-in-out infinite alternate;
       filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
-      transition: filter 0.1s ease-out;
       cursor: pointer;
-    }
-    
-    .artist.music-glow {
-      filter: drop-shadow(0 0 20px rgba(255,253,225,0.8)) 
-              drop-shadow(0 0 40px rgba(255,253,225,0.6))
-              drop-shadow(0 10px 30px rgba(0,0,0,0.5));
     }
 
     @keyframes fadeInUp {
@@ -546,12 +540,6 @@
 
   <script>
     let isMenuOpen = false;
-    let audioContext;
-    let analyser;
-    let dataArray;
-    let audio;
-    let isPlaying = false;
-    let animationStarted = false;
 
     function toggleMenu() {
       const barBtn = document.getElementById('barBtn');
@@ -586,145 +574,6 @@
     const marquee = document.getElementById('marquee');
     const marqueeContent = marquee.innerHTML;
     marquee.innerHTML = marqueeContent + marqueeContent;
-
-    // Инициализация аудио и анализатора
-    function initAudio() {
-      if (audio) return; // инициализируем только один раз
-
-      audio = new Audio('sounds/background-music.mp3'); // путь к треку в папке sounds
-      audio.crossOrigin = "anonymous"; // на всякий случай, если нужен доступ к данным
-      audio.loop = true;
-      audio.volume = 0.5;
-
-      // Создаём AudioContext при необходимости
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = 512; // чуть лучше разрешение
-      analyser.smoothingTimeConstant = 0.8; // сглаживание для более плавного свечения
-      
-      const source = audioContext.createMediaElementSource(audio);
-      source.connect(analyser);
-      analyser.connect(audioContext.destination);
-      
-      const bufferLength = analyser.frequencyBinCount;
-      dataArray = new Uint8Array(bufferLength);
-      
-      startVisualization();
-    }
-
-    // Визуализация свечения
-    function startVisualization() {
-      if (animationStarted) return;
-      animationStarted = true;
-
-      const artist = document.querySelector('.artist');
-      
-      function animate() {
-        requestAnimationFrame(animate);
-        
-        if (!isPlaying) return; // продолжаем цикл, просто не применяем свечение
-        
-        analyser.getByteFrequencyData(dataArray);
-        
-        // Анализируем басы (низкие частоты) - первые 20% массива
-        const bassRange = Math.max(1, Math.floor(dataArray.length * 0.2));
-        let bassSum = 0;
-        for (let i = 0; i < bassRange; i++) {
-          bassSum += dataArray[i];
-        }
-        const bassAverage = bassSum / bassRange;
-        
-        // Анализируем средние частоты (где обычно находится ритм)
-        const midStart = bassRange;
-        const midEnd = Math.max(midStart + 1, Math.floor(dataArray.length * 0.5));
-        let midSum = 0;
-        for (let i = midStart; i < midEnd; i++) {
-          midSum += dataArray[i];
-        }
-        const midAverage = midSum / (midEnd - midStart);
-        
-        // Нормализуем значения (0-255 -> 0-1)
-        const bassIntensity = bassAverage / 255;
-        const midIntensity = midAverage / 255;
-        
-        // Комбинированная интенсивность (больший вес басам)
-        const intensity = Math.min(1, bassIntensity * 0.75 + midIntensity * 0.25);
-        
-        // Порог и применение светоэффекта
-        const threshold = 0.12; // порог срабатывания — можно корректировать
-        if (intensity > threshold) {
-          // более чувствительный масштаб — подстраиваемся под громкость трека
-          const glowStrength = Math.min(100, Math.round(intensity * 120)); // пиксели размытия
-          const glowOpacity = Math.min(0.95, intensity * 1.1);
-          
-          artist.style.filter = `
-            drop-shadow(0 0 ${glowStrength}px rgba(255,253,225,${glowOpacity})) 
-            drop-shadow(0 0 ${Math.round(glowStrength * 1.4)}px rgba(255,253,225,${glowOpacity * 0.6}))
-            drop-shadow(0 10px 30px rgba(0,0,0,0.5))
-          `;
-          // Можно также добавлять класс для CSS-анимаций
-          artist.classList.add('music-glow');
-        } else {
-          artist.style.filter = 'drop-shadow(0 10px 30px rgba(0,0,0,0.5))';
-          artist.classList.remove('music-glow');
-        }
-      }
-      
-      animate();
-    }
-
-    // Попытка запустить музыку и AudioContext с учётом политики автоплей браузеров
-    function tryStartAudio() {
-      initAudio();
-      if (!audio) return;
-
-      // При успешном воспроизведении — резюмируем AudioContext и включаем визуализацию
-      audio.play().then(() => {
-        // Некоторый браузеры создают suspended AudioContext — резюмируем его
-        if (audioContext && audioContext.state === 'suspended') {
-          audioContext.resume().catch(() => {});
-        }
-        isPlaying = true;
-        console.log('Музыка запущена автоматически');
-      }).catch((err) => {
-        console.log('Автовоспроизведение заблокировано. Ожидается взаимодействие пользователя.', err);
-        // Запустить при первом взаимодействии пользователя
-        const startHandler = function() {
-          if (!audio) return;
-          // Резюмуем context перед play
-          if (audioContext && audioContext.state === 'suspended') {
-            audioContext.resume().catch(() => {});
-          }
-          audio.play().then(() => {
-            isPlaying = true;
-            console.log('Музыка запущена после взаимодействия пользователя');
-          }).catch(e => {
-            console.warn('Не удалось запустить аудио после клика:', e);
-          });
-          // Удаляем слушатели — нужно выполнить один раз
-          document.removeEventListener('click', startHandler);
-          document.removeEventListener('touchstart', startHandler);
-        };
-        document.addEventListener('click', startHandler, { once: true });
-        document.addEventListener('touchstart', startHandler, { once: true });
-      });
-    }
-
-    // Автозапуск музыки при загрузке страницы (попытка)
-    window.addEventListener('load', function() {
-      tryStartAudio();
-    });
-
-    // Также даём пользователю возможность нажать на артистку, чтобы включить звук — удобно для мобил
-    const artistEl = document.querySelector('.artist');
-    if (artistEl) {
-      artistEl.addEventListener('click', function() {
-        tryStartAudio();
-      });
-      artistEl.addEventListener('touchstart', function() {
-        tryStartAudio();
-      });
-    }
   </script>
 </body>
 </html>
